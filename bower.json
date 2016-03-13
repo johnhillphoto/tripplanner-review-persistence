@@ -1,0 +1,23 @@
+{
+  "name": "tripplanner-static-ui",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Eric P. Katz <ericpkatz@gmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/FullstackAcademy/1601F-Library",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.6",
+    "jquery": "^2.2.1"
+  }
+}
