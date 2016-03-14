@@ -20,7 +20,7 @@ app.set('view engine', 'html');
 module.exports = app;
 
 
-app.use('/', routes);
+app.use('/api', routes);
 
 app.use(function(req, res, next){
   var pages = [

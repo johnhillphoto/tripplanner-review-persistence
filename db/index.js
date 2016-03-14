@@ -49,13 +49,12 @@ var daySchema = mongoose.Schema({
 
 var Day = mongoose.model('day', daySchema);
 
-
-
 var models = {
   Hotel: Hotel,
   Place: Place,
   Restaurant: Restaurant,
-  Activity: Activity
+  Activity: Activity,
+  Day: Day
 };
 
 var _conn;
