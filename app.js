@@ -10,6 +10,7 @@ var Restaurant = models.Restaurant;
 var Activity = models.Activity;
 
 var app = express();
+app.use(require('method-override')('_method'));
 var routes = require('./routes/api/days');
 
 app.use('/client', express.static(path.join(__dirname, 'client')));
