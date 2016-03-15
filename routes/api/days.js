@@ -7,6 +7,25 @@ var Activity = models.Activity;
 var Day = models.Day;
 var Promise = require('bluebird');
 
+// create a new day
+router.post('/days/', function(req, res, next){
+  console.log('inside post route');
+  Day.find({})
+    .then(function(_days){
+      return _days.length;
+    })
+    .then(function(_daysLength){
+      var newDay = new Day({ number:_daysLength+1, hotel: "56e4844a3af2d10d686d02c5" });
+      console.log(newDay);
+      return newDay.save();
+    })
+  // var newDay = new Day({ number:1, hotel: "56e4844a3af2d10d686d02c5" , restaurants:["56e4844a3af2d10d686d02d4"], activities:["56e4844a3af2d10d686d02e4"]});
+    .then(function (day) {
+      console.log('a new day is:',day);
+      res.sendStatus(200);
+  })
+  .then(null, next);
+});
 
 router.get('/hotels', function(req, res, next){
   // console.log('inside router');
@@ -30,6 +49,24 @@ router.get('/activity', function(req, res, next){
       })
       .then(null,next);
 });
+// find one day
+// router.get('/days/:id', function(req, res, next){
+//   Day.find({ _id: req.params.id})
+//       .then(function(day){
+//         res.json(day);
+//         console.log("one Day found and sent");
+//       })
+//       .then(null,next);
+// });
+// find one day via number
+router.get('/days/:num', function(req, res, next){
+  Day.find({ number: req.params.num})
+      .then(function(day){
+        res.json(day);
+        console.log("one Day found and sent");
+      })
+      .then(null,next);
+});
 // list all days
 router.get('/days', function(req, res, next){
     Day.find({})
@@ -38,25 +75,8 @@ router.get('/days', function(req, res, next){
       })
       .then(null,next);
 });
-// find one day
-router.get('/days/:id', function(req, res, next){
-  Day.find({ _id: req.params.id})
-      .then(function(day){
-        res.json(day);
-        console.log("one Day found and sent");
-      })
-      .then(null,next);
-});
-// create a new day
-router.post('/days/', function(req, res, next){
-  // var newDay = new Day({ number:1, hotel: "56e4844a3af2d10d686d02c5" , restaurants:["56e4844a3af2d10d686d02d4"], activities:["56e4844a3af2d10d686d02e4"]});
-  newDay.save(req.body)
-  .then(function (day) {
-    console.log(day);
-    res.sendStatus(200);
-  })
-  .then(null, next);
-});
+
+
 // delete a day
 router.delete('/days/:id', function(req, res, next){
   Day.remove({ _id: req.params.id})
@@ -68,43 +88,43 @@ router.delete('/days/:id', function(req, res, next){
 });
 ///add a hotel to a day
 router.post('/days/:dayNum/hotel/:hotelId', function(req, res, next){
-  Day.find({ number: req.params.dayNum})
+  Day.findOne({ number: req.params.dayNum})
       .then(function(_day){
-        _day[0].hotel = req.params.hotelId;
-        _day[0].save();
-        console.log("one Hotel added to day:",req.params.dayNum);
+        _day.hotel = [req.params.hotelId];
+        return _day.save();
       })
       .then(function(_day){
+        console.log("one Hotel added to day:",req.params.dayNum);
         res.sendStatus(200);
       })
       .then(null,next);
 });
 
 function addAttraction(_dayNum, _attraction, _attID){
-Day.find({ number: _dayNum })
+Day.findOne({ number: _dayNum })
   .then(function(_day){
-    if ( (_day[0][_attraction].indexOf(_attID) === -1) ){
-    _day[0][_attraction].push(_attID);
-    _day[0].save();
-    console.log("one " + _attraction + " added to day:",_dayNum );
+    if ( (_day[_attraction].indexOf(_attID) === -1) ){
+    _day[_attraction].push(_attID);
+    return _day.save();
   }
     else{ console.log('duplicate :',_attraction); return; }
   })
   .then(function(_day){
+    console.log("one " + _attraction + " added to day:",_dayNum );
     res.sendStatus(200);
   })
   .then(null,next);
 }//end addAttraction
 
 function deleteAttraction(_dayNum, _attraction, _attID){
-Day.find({ number: _dayNum })
+Day.findOne({ number: _dayNum })
   .then(function(_day){
-     var arrayPosition = _day[0][_attraction].indexOf(_attID);
-    _day[0][_attraction].splice(arrayPosition, 1);
-    _day[0].save();
-    console.log("one " + _attraction + " deleted from day:",_dayNum );
+     var arrayPosition = _day[_attraction].indexOf(_attID);
+    _day[_attraction].splice(arrayPosition, 1);
+    return _day.save();
   })
   .then(function(_day){
+    console.log("one " + _attraction + " deleted from day:",_dayNum );
     res.sendStatus(200);
   })
   .then(null,next);
@@ -112,6 +132,7 @@ Day.find({ number: _dayNum })
 
 ///add a restaurant to a day
 router.post('/days/:dayNum/restaurants/:restId', function(req, res, next){
+  console.log("inside add route");
     var _dayNum = req.params.dayNum;
     var _attraction = 'restaurants';
     var _attID = req.params.restId;
